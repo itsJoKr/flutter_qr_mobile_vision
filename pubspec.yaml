@@ -21,6 +21,8 @@ dependencies:
     sdk: flutter
   native_device_orientation: ^1.0.0
   device_info_plus: '>=3.0.0 <10.0.0'
+dev_dependencies:
+  pigeon: ^10.1.4
 
 false_secrets:
   - /example/android/app/google-services.json

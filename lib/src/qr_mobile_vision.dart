@@ -7,6 +7,7 @@ import 'package:qr_mobile_vision/src/barcode_formats.dart';
 import 'package:qr_mobile_vision/src/camera_direction.dart';
 import 'package:qr_mobile_vision/src/preview_details.dart';
 import 'package:qr_mobile_vision/src/qr_channel_reader.dart';
+import 'package:qr_mobile_vision/src/scanned_barcode.g.dart';
 
 class QrMobileVision {
   static const MethodChannel _channel = const MethodChannel('com.github.rmtmckenzie/qr_mobile_vision');
@@ -17,6 +18,7 @@ class QrMobileVision {
     required int width,
     required int height,
     required ValueChanged<String?> qrCodeHandler,
+    required Function(ScannedBarcodesResponse) onScannedBarcodes,
     CameraDirection cameraDirection = CameraDirection.BACK,
     List<BarcodeFormats>? formats = defaultBarcodeFormats,
   }) async {
@@ -27,7 +29,11 @@ class QrMobileVision {
 
     final deviceInfoFut = Platform.isAndroid ? DeviceInfoPlugin().androidInfo : Future.value(null);
 
+    /// Set Native -> Flutter channel
     channelReader.setQrCodeHandler(qrCodeHandler);
+    /// Another channel for Pigeon
+    QrMobileVisionApi.setup(QrMobileVisionFlutterApi(onScannedBarcodes));
+
     final details = (await _channel.invokeMapMethod<String, dynamic>('start', {
       'targetWidth': width,
       'targetHeight': height,

@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:qr_mobile_vision/src/scanned_barcode.g.dart';
 
 class QrChannelReader {
   QrChannelReader(this.channel) {
@@ -23,4 +24,15 @@ class QrChannelReader {
 
   MethodChannel channel;
   ValueChanged<String?>? qrCodeHandler;
+}
+
+class QrMobileVisionFlutterApi implements QrMobileVisionApi {
+  QrMobileVisionFlutterApi(this.onScannedBarcodes);
+
+  final Function(ScannedBarcodesResponse) onScannedBarcodes;
+
+  @override
+  void onScannedBarcode(ScannedBarcodesResponse barcode) {
+    onScannedBarcodes(barcode);
+  }
 }

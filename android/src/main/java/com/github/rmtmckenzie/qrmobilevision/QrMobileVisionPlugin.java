@@ -20,6 +20,7 @@ import java.util.Map;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -43,11 +44,15 @@ public class QrMobileVisionPlugin implements MethodCallHandler, QrReaderCallback
     private boolean permissionDenied;
     private ReadingInstance readingInstance;
 
+    private ScannedBarcodePigeon.QrMobileVisionApi api;
+
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
         textures = binding.getTextureRegistry();
         channel = new MethodChannel(binding.getBinaryMessenger(), "com.github.rmtmckenzie/qr_mobile_vision");
         channel.setMethodCallHandler(this);
+
+        api = new ScannedBarcodePigeon.QrMobileVisionApi(binding.getBinaryMessenger());
     }
 
     @Override
@@ -184,6 +189,15 @@ public class QrMobileVisionPlugin implements MethodCallHandler, QrReaderCallback
     @Override
     public void qrRead(String data) {
         channel.invokeMethod("qrRead", data);
+    }
+
+    @Override
+    public void onScanned(List<ScannedBarcodePigeon.ScannedBarcode> barcodes) {
+        ScannedBarcodePigeon.ScannedBarcodesResponse response = new ScannedBarcodePigeon.ScannedBarcodesResponse();
+        response.setBarcodes(barcodes);
+        api.onScannedBarcode(response, (ScannedBarcodePigeon.QrMobileVisionApi.Reply) reply -> {
+            // no-op
+        });
     }
 
     @Override

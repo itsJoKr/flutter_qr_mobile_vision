@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:qr_mobile_vision/qr_mobile_vision.dart';
 import 'package:qr_mobile_vision/src/preview.dart';
 import 'package:qr_mobile_vision/src/preview_details.dart';
+import 'package:qr_mobile_vision/src/scanned_barcode.g.dart';
 
 final WidgetBuilder _defaultNotStartedBuilder = (context) => Text("Camera Loading ...");
 final WidgetBuilder _defaultOffscreenBuilder = (context) => Text("Camera Paused.");
@@ -18,6 +19,7 @@ class QrCamera extends StatefulWidget {
   QrCamera({
     Key? key,
     required this.qrCodeCallback,
+    required this.onScannedBarcodes,
     this.child,
     this.fit = BoxFit.cover,
     WidgetBuilder? notStartedBuilder,
@@ -32,6 +34,7 @@ class QrCamera extends StatefulWidget {
 
   final BoxFit fit;
   final ValueChanged<String?> qrCodeCallback;
+  final Function(ScannedBarcodesResponse) onScannedBarcodes;
   final Widget? child;
   final WidgetBuilder notStartedBuilder;
   final WidgetBuilder offscreenBuilder;
@@ -104,6 +107,7 @@ class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
       width: (devicePixelRatio * width.toInt()).ceil(),
       height: (devicePixelRatio * height.toInt()).ceil(),
       qrCodeHandler: widget.qrCodeCallback,
+      onScannedBarcodes: widget.onScannedBarcodes,
       formats: widget.formats,
       cameraDirection: widget.cameraDirection,
     );

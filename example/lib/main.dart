@@ -60,6 +60,11 @@ class _MyAppState extends State<MyApp> {
                           width: 300.0,
                           height: 600.0,
                           child: QrCamera(
+                            onScannedBarcodes: (codes) {
+                              for (final b in codes.barcodes) {
+                                print('${b!.barcode} ${b.boundLeft} ${b.boundTop} ${b.boundRight} ${b.boundBottom} ');
+                              }
+                            },
                             onError: (context, error) => Text(
                               error.toString(),
                               style: TextStyle(color: Colors.red),

@@ -16,6 +16,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.common.InputImage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -87,9 +88,25 @@ class QrDetector implements OnSuccessListener<List<Barcode>>, OnFailureListener 
 
     @Override
     public void onSuccess(List<Barcode> firebaseVisionBarcodes) {
+        final List<ScannedBarcodePigeon.ScannedBarcode> barcodes = new ArrayList<>();
+
         for (Barcode barcode : firebaseVisionBarcodes) {
             communicator.qrRead(barcode.getDisplayValue());
+
+            final ScannedBarcodePigeon.ScannedBarcode barcode1 = new ScannedBarcodePigeon.ScannedBarcode();
+            barcode1.setBarcode(barcode.getDisplayValue());
+
+            if (barcode.getBoundingBox() != null) {
+                barcode1.setBoundTop((long) barcode.getBoundingBox().top);
+                barcode1.setBoundBottom((long) barcode.getBoundingBox().bottom);
+                barcode1.setBoundLeft((long) barcode.getBoundingBox().left);
+                barcode1.setBoundRight((long) barcode.getBoundingBox().right);
+            }
+
+            barcodes.add(barcode1);
         }
+
+        communicator.onScanned(barcodes);
     }
 
     @Override
