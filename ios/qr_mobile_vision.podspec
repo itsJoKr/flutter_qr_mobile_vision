@@ -20,7 +20,7 @@ Plugin for reading QR codes using Google&#x27;s Mobile Vision API.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphoneos*]' => 'arm64' }
   s.swift_version = '5.0'
 
-  s.dependency 'GoogleMLKit/BarcodeScanning'
+  s.dependency 'GoogleMLKit/BarcodeScanning', '3.2.0'
   
   s.static_framework = true
 end

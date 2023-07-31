@@ -121,44 +121,15 @@ public class ScannedBarcodePigeon {
       this.barcode = setterArg;
     }
 
-    private @Nullable Long boundLeft;
+    /** https://developers.google.com/ml-kit/reference/swift/mlkitbarcodescanning/api/reference/Classes/Barcode */
+    private @Nullable BarcodeRect rect;
 
-    public @Nullable Long getBoundLeft() {
-      return boundLeft;
+    public @Nullable BarcodeRect getRect() {
+      return rect;
     }
 
-    public void setBoundLeft(@Nullable Long setterArg) {
-      this.boundLeft = setterArg;
-    }
-
-    private @Nullable Long boundTop;
-
-    public @Nullable Long getBoundTop() {
-      return boundTop;
-    }
-
-    public void setBoundTop(@Nullable Long setterArg) {
-      this.boundTop = setterArg;
-    }
-
-    private @Nullable Long boundRight;
-
-    public @Nullable Long getBoundRight() {
-      return boundRight;
-    }
-
-    public void setBoundRight(@Nullable Long setterArg) {
-      this.boundRight = setterArg;
-    }
-
-    private @Nullable Long boundBottom;
-
-    public @Nullable Long getBoundBottom() {
-      return boundBottom;
-    }
-
-    public void setBoundBottom(@Nullable Long setterArg) {
-      this.boundBottom = setterArg;
+    public void setRect(@Nullable BarcodeRect setterArg) {
+      this.rect = setterArg;
     }
 
     /** Constructor is non-public to enforce null safety; use Builder. */
@@ -173,53 +144,26 @@ public class ScannedBarcodePigeon {
         return this;
       }
 
-      private @Nullable Long boundLeft;
+      private @Nullable BarcodeRect rect;
 
-      public @NonNull Builder setBoundLeft(@Nullable Long setterArg) {
-        this.boundLeft = setterArg;
-        return this;
-      }
-
-      private @Nullable Long boundTop;
-
-      public @NonNull Builder setBoundTop(@Nullable Long setterArg) {
-        this.boundTop = setterArg;
-        return this;
-      }
-
-      private @Nullable Long boundRight;
-
-      public @NonNull Builder setBoundRight(@Nullable Long setterArg) {
-        this.boundRight = setterArg;
-        return this;
-      }
-
-      private @Nullable Long boundBottom;
-
-      public @NonNull Builder setBoundBottom(@Nullable Long setterArg) {
-        this.boundBottom = setterArg;
+      public @NonNull Builder setRect(@Nullable BarcodeRect setterArg) {
+        this.rect = setterArg;
         return this;
       }
 
       public @NonNull ScannedBarcode build() {
         ScannedBarcode pigeonReturn = new ScannedBarcode();
         pigeonReturn.setBarcode(barcode);
-        pigeonReturn.setBoundLeft(boundLeft);
-        pigeonReturn.setBoundTop(boundTop);
-        pigeonReturn.setBoundRight(boundRight);
-        pigeonReturn.setBoundBottom(boundBottom);
+        pigeonReturn.setRect(rect);
         return pigeonReturn;
       }
     }
 
     @NonNull
     ArrayList<Object> toList() {
-      ArrayList<Object> toListResult = new ArrayList<Object>(5);
+      ArrayList<Object> toListResult = new ArrayList<Object>(2);
       toListResult.add(barcode);
-      toListResult.add(boundLeft);
-      toListResult.add(boundTop);
-      toListResult.add(boundRight);
-      toListResult.add(boundBottom);
+      toListResult.add((rect == null) ? null : rect.toList());
       return toListResult;
     }
 
@@ -227,14 +171,129 @@ public class ScannedBarcodePigeon {
       ScannedBarcode pigeonResult = new ScannedBarcode();
       Object barcode = list.get(0);
       pigeonResult.setBarcode((String) barcode);
-      Object boundLeft = list.get(1);
-      pigeonResult.setBoundLeft((boundLeft == null) ? null : ((boundLeft instanceof Integer) ? (Integer) boundLeft : (Long) boundLeft));
-      Object boundTop = list.get(2);
-      pigeonResult.setBoundTop((boundTop == null) ? null : ((boundTop instanceof Integer) ? (Integer) boundTop : (Long) boundTop));
-      Object boundRight = list.get(3);
-      pigeonResult.setBoundRight((boundRight == null) ? null : ((boundRight instanceof Integer) ? (Integer) boundRight : (Long) boundRight));
-      Object boundBottom = list.get(4);
-      pigeonResult.setBoundBottom((boundBottom == null) ? null : ((boundBottom instanceof Integer) ? (Integer) boundBottom : (Long) boundBottom));
+      Object rect = list.get(1);
+      pigeonResult.setRect((rect == null) ? null : BarcodeRect.fromList((ArrayList<Object>) rect));
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class BarcodeRect {
+    private @NonNull Long left;
+
+    public @NonNull Long getLeft() {
+      return left;
+    }
+
+    public void setLeft(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"left\" is null.");
+      }
+      this.left = setterArg;
+    }
+
+    private @NonNull Long top;
+
+    public @NonNull Long getTop() {
+      return top;
+    }
+
+    public void setTop(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"top\" is null.");
+      }
+      this.top = setterArg;
+    }
+
+    private @NonNull Long right;
+
+    public @NonNull Long getRight() {
+      return right;
+    }
+
+    public void setRight(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"right\" is null.");
+      }
+      this.right = setterArg;
+    }
+
+    private @NonNull Long bottom;
+
+    public @NonNull Long getBottom() {
+      return bottom;
+    }
+
+    public void setBottom(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"bottom\" is null.");
+      }
+      this.bottom = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    BarcodeRect() {}
+
+    public static final class Builder {
+
+      private @Nullable Long left;
+
+      public @NonNull Builder setLeft(@NonNull Long setterArg) {
+        this.left = setterArg;
+        return this;
+      }
+
+      private @Nullable Long top;
+
+      public @NonNull Builder setTop(@NonNull Long setterArg) {
+        this.top = setterArg;
+        return this;
+      }
+
+      private @Nullable Long right;
+
+      public @NonNull Builder setRight(@NonNull Long setterArg) {
+        this.right = setterArg;
+        return this;
+      }
+
+      private @Nullable Long bottom;
+
+      public @NonNull Builder setBottom(@NonNull Long setterArg) {
+        this.bottom = setterArg;
+        return this;
+      }
+
+      public @NonNull BarcodeRect build() {
+        BarcodeRect pigeonReturn = new BarcodeRect();
+        pigeonReturn.setLeft(left);
+        pigeonReturn.setTop(top);
+        pigeonReturn.setRight(right);
+        pigeonReturn.setBottom(bottom);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(4);
+      toListResult.add(left);
+      toListResult.add(top);
+      toListResult.add(right);
+      toListResult.add(bottom);
+      return toListResult;
+    }
+
+    static @NonNull BarcodeRect fromList(@NonNull ArrayList<Object> list) {
+      BarcodeRect pigeonResult = new BarcodeRect();
+      Object left = list.get(0);
+      pigeonResult.setLeft((left == null) ? null : ((left instanceof Integer) ? (Integer) left : (Long) left));
+      Object top = list.get(1);
+      pigeonResult.setTop((top == null) ? null : ((top instanceof Integer) ? (Integer) top : (Long) top));
+      Object right = list.get(2);
+      pigeonResult.setRight((right == null) ? null : ((right instanceof Integer) ? (Integer) right : (Long) right));
+      Object bottom = list.get(3);
+      pigeonResult.setBottom((bottom == null) ? null : ((bottom instanceof Integer) ? (Integer) bottom : (Long) bottom));
       return pigeonResult;
     }
   }
@@ -248,8 +307,10 @@ public class ScannedBarcodePigeon {
     protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
       switch (type) {
         case (byte) 128:
-          return ScannedBarcode.fromList((ArrayList<Object>) readValue(buffer));
+          return BarcodeRect.fromList((ArrayList<Object>) readValue(buffer));
         case (byte) 129:
+          return ScannedBarcode.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 130:
           return ScannedBarcodesResponse.fromList((ArrayList<Object>) readValue(buffer));
         default:
           return super.readValueOfType(type, buffer);
@@ -258,11 +319,14 @@ public class ScannedBarcodePigeon {
 
     @Override
     protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-      if (value instanceof ScannedBarcode) {
+      if (value instanceof BarcodeRect) {
         stream.write(128);
+        writeValue(stream, ((BarcodeRect) value).toList());
+      } else if (value instanceof ScannedBarcode) {
+        stream.write(129);
         writeValue(stream, ((ScannedBarcode) value).toList());
       } else if (value instanceof ScannedBarcodesResponse) {
-        stream.write(129);
+        stream.write(130);
         writeValue(stream, ((ScannedBarcodesResponse) value).toList());
       } else {
         super.writeValue(stream, value);

@@ -29,15 +29,18 @@ public class SwiftQrMobileVisionPlugin: NSObject, FlutterPlugin {
   
   let textureRegistry: FlutterTextureRegistry
   let channel: FlutterMethodChannel
+ var flutterAPI: QrMobileVisionApi!
+    
   
-  init(channel: FlutterMethodChannel, textureRegistry: FlutterTextureRegistry) {
+    init(channel: FlutterMethodChannel, textureRegistry: FlutterTextureRegistry, binaryMessenger: FlutterBinaryMessenger) {
     self.textureRegistry = textureRegistry
     self.channel = channel
+    self.flutterAPI = QrMobileVisionApi(binaryMessenger: binaryMessenger)
   }
   
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "com.github.rmtmckenzie/qr_mobile_vision", binaryMessenger: registrar.messenger());
-    let instance = SwiftQrMobileVisionPlugin(channel: channel, textureRegistry: registrar.textures());
+      let instance = SwiftQrMobileVisionPlugin(channel: channel, textureRegistry: registrar.textures(), binaryMessenger: registrar.messenger());
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
   
@@ -75,9 +78,16 @@ public class SwiftQrMobileVisionPlugin: NSObject, FlutterPlugin {
           targetHeight: targetHeight,
           direction: cameraDirection,
           textureRegistry: textureRegistry,
-          options: options) { [unowned self] qr in
+          options: options,
+        qrCallback: { [unowned self] qr in
             self.channel.invokeMethod("qrRead", arguments: qr)
-        }
+        },
+          barcodeResponseCallback: { [unowned self] response in
+              self.flutterAPI.onScannedBarcode(barcode: response) {
+                // no-result
+              }
+          }
+        )
         
         reader!.start();
         

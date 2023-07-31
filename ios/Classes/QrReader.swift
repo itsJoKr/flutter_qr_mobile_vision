@@ -132,14 +132,16 @@ class QrReader: NSObject {
   var pixelBuffer : CVPixelBuffer?
   let barcodeDetector: BarcodeScanner
   let qrCallback: (_:String) -> Void
+let barcodeResponseCallback: (_:ScannedBarcodesResponse) -> Void
   
   
   
-  init(targetWidth: Int, targetHeight: Int, direction: QrCameraDirection, textureRegistry: FlutterTextureRegistry, options: BarcodeScannerOptions, qrCallback: @escaping (_:String) -> Void) throws {
+  init(targetWidth: Int, targetHeight: Int, direction: QrCameraDirection, textureRegistry: FlutterTextureRegistry, options: BarcodeScannerOptions, qrCallback: @escaping (_:String) -> Void, barcodeResponseCallback: @escaping (_:ScannedBarcodesResponse) -> Void) throws {
     self.targetWidth = targetWidth
     self.targetHeight = targetHeight
     self.textureRegistry = textureRegistry
     self.qrCallback = qrCallback
+    self.barcodeResponseCallback = barcodeResponseCallback
     self.cameraPosition  = direction.cameraPosition
     self.barcodeDetector = BarcodeScanner.barcodeScanner(options: options)
     
@@ -231,11 +233,13 @@ extension QrReader: AVCaptureVideoDataOutputSampleBufferDelegate {
     
     pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)!
     textureRegistry.textureFrameAvailable(self.textureId)
+      
     
     guard !isProcessing.swap(true) else {
       return
     }
-    
+
+      
     let image = VisionImage(buffer: sampleBuffer)
     image.orientation = imageOrientation(
       deviceOrientation: UIDevice.current.orientation,
@@ -259,16 +263,48 @@ extension QrReader: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let features = features, !features.isEmpty else {
           return
         }
+          
+          
+        var barcodesList: [ScannedBarcode] = []
         
         for feature in features {
+            let rect = feature.frame
+            
+//            let barcodeRect = BarcodeRect(left: Int64(rect.minX), top: Int64(rect.minY), right:  Int64(rect.maxX), bottom: Int64(rect.maxY))
+            
+            // Re-calculated
+            let barcodeRect = BarcodeRect(left: Int64(self.previewSize!.height) - Int64(rect.minY), top: Int64(rect.minX), right: Int64(self.previewSize!.height) - Int64(rect.maxY), bottom: Int64(rect.maxX))
+            let barcode = ScannedBarcode(barcode: feature.displayValue ?? "N/A", rect: barcodeRect)
+            barcodesList.append(barcode)
+            
+            // Old way
           if let value = feature.displayValue {
             self.qrCallback(value)
           }
         }
+          
+        self.barcodeResponseCallback(ScannedBarcodesResponse(barcodes: barcodesList))
       }
     }
   }
   
+    func orientation() -> UIImage.Orientation {
+        let curDeviceOrientation = UIDevice.current.orientation
+        var exifOrientation: UIImage.Orientation
+        switch curDeviceOrientation {
+            case UIDeviceOrientation.portraitUpsideDown:  // Device oriented vertically, Home button on the top
+                exifOrientation = .left
+            case UIDeviceOrientation.landscapeLeft:       // Device oriented horizontally, Home button on the right
+                exifOrientation = .upMirrored
+            case UIDeviceOrientation.landscapeRight:      // Device oriented horizontally, Home button on the left
+                exifOrientation = .down
+            case UIDeviceOrientation.portrait:            // Device oriented vertically, Home button on the bottom
+                exifOrientation = .up
+            default:
+                exifOrientation = .up
+        }
+        return exifOrientation
+    }
   
   
   func imageOrientation(

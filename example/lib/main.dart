@@ -29,6 +29,9 @@ class _MyAppState extends State<MyApp> {
   bool camState = false;
   bool dirState = false;
 
+  int dumbWayToThrottle = 0;
+  ScannedBarcodesResponse? response;
+
   @override
   initState() {
     super.initState();
@@ -40,58 +43,67 @@ class _MyAppState extends State<MyApp> {
       appBar: AppBar(
         title: Text('Plugin example app'),
       ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Back"),
-                Switch(value: dirState, onChanged: (val) => setState(() => dirState = val)),
-                Text("Front"),
-              ],
-            ),
-            Expanded(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Back"),
+              Switch(
+                  value: dirState,
+                  onChanged: (val) => setState(() => dirState = val)),
+              Text("Front"),
+            ],
+          ),
+          Expanded(
+              child: Stack(
+            children: [
+              Positioned.fill(
                 child: camState
-                    ? Center(
-                        child: SizedBox(
-                          width: 300.0,
-                          height: 600.0,
-                          child: QrCamera(
-                            onScannedBarcodes: (codes) {
-                              for (final b in codes.barcodes) {
-                                print('${b!.barcode} ${b.boundLeft} ${b.boundTop} ${b.boundRight} ${b.boundBottom} ');
-                              }
-                            },
-                            onError: (context, error) => Text(
-                              error.toString(),
-                              style: TextStyle(color: Colors.red),
-                            ),
-                            cameraDirection: dirState ? CameraDirection.FRONT : CameraDirection.BACK,
-                            qrCodeCallback: (code) {
-                              setState(() {
-                                qr = code;
-                              });
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                border: Border.all(
-                                  color: Colors.orange,
-                                  width: 10.0,
-                                  style: BorderStyle.solid,
-                                ),
-                              ),
+                    ? QrCamera(
+                        onScannedBarcodes: (codes) {
+                          setState(() {
+                            response = codes;
+                          });
+                        },
+                        onError: (context, error) => Text(
+                          error.toString(),
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        cameraDirection: dirState
+                            ? CameraDirection.FRONT
+                            : CameraDirection.BACK,
+                        qrCodeCallback: (code) {
+                          setState(() {
+                            qr = code;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            border: Border.all(
+                              color: Colors.orange,
+                              width: 10.0,
+                              style: BorderStyle.solid,
                             ),
                           ),
                         ),
                       )
-                    : Center(child: Text("Camera inactive"))),
-            Text("QRCODE: $qr"),
-          ],
-        ),
+                    : Center(child: Text("Camera inactive")),
+              ),
+              if (response != null)
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter:
+                        YourRect(response!, View.of(context).devicePixelRatio),
+                  ),
+                ),
+            ],
+          )),
+          Text("QRCODE: $qr"),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
           child: Text(
@@ -104,5 +116,44 @@ class _MyAppState extends State<MyApp> {
             });
           }),
     );
+  }
+}
+
+class YourRect extends CustomPainter {
+  YourRect(this.response, this.devicePixelRatio);
+
+  final ScannedBarcodesResponse response;
+  final double devicePixelRatio;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+
+    final Paint paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xff0056eb).withOpacity(0.3)
+      ..strokeWidth = 1.0;
+
+    for (final barcode in response.barcodes) {
+      if (barcode == null || barcode.rect == null) {
+        continue;
+      }
+
+      final rect = barcode.rect!;
+
+      canvas.drawRect(
+        Rect.fromLTRB(
+          rect.left / devicePixelRatio,
+          rect.top / devicePixelRatio,
+          rect.right / devicePixelRatio,
+          rect.bottom / devicePixelRatio,
+        ),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(YourRect oldDelegate) {
+    return false;
   }
 }

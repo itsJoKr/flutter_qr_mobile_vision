@@ -17,7 +17,6 @@ import 'package:pigeon/pigeon.dart';
   // objcOptions: ObjcOptions(prefix: 'PGN'),
   dartPackageName: 'qr_mobile_vision',
 ))
-
 class ScannedBarcodesResponse {
   ScannedBarcodesResponse(this.barcodes);
 
@@ -26,13 +25,20 @@ class ScannedBarcodesResponse {
 
 class ScannedBarcode {
   final String barcode;
-  final int? boundLeft;
-  final int? boundTop;
-  final int? boundRight;
-  final int? boundBottom;
 
-  ScannedBarcode(this.barcode, this.boundLeft, this.boundTop, this.boundBottom,
-      this.boundRight);
+  /// https://developers.google.com/ml-kit/reference/swift/mlkitbarcodescanning/api/reference/Classes/Barcode
+  final BarcodeRect? rect;
+
+  ScannedBarcode(this.barcode, this.rect);
+}
+
+class BarcodeRect {
+  BarcodeRect(this.left, this.top, this.right, this.bottom);
+
+  final int left;
+  final int top;
+  final int right;
+  final int bottom;
 }
 
 @FlutterApi()

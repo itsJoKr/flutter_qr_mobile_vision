@@ -32,29 +32,18 @@ class ScannedBarcodesResponse {
 class ScannedBarcode {
   ScannedBarcode({
     required this.barcode,
-    this.boundLeft,
-    this.boundTop,
-    this.boundRight,
-    this.boundBottom,
+    this.rect,
   });
 
   String barcode;
 
-  int? boundLeft;
-
-  int? boundTop;
-
-  int? boundRight;
-
-  int? boundBottom;
+  /// https://developers.google.com/ml-kit/reference/swift/mlkitbarcodescanning/api/reference/Classes/Barcode
+  BarcodeRect? rect;
 
   Object encode() {
     return <Object?>[
       barcode,
-      boundLeft,
-      boundTop,
-      boundRight,
-      boundBottom,
+      rect?.encode(),
     ];
   }
 
@@ -62,10 +51,45 @@ class ScannedBarcode {
     result as List<Object?>;
     return ScannedBarcode(
       barcode: result[0]! as String,
-      boundLeft: result[1] as int?,
-      boundTop: result[2] as int?,
-      boundRight: result[3] as int?,
-      boundBottom: result[4] as int?,
+      rect: result[1] != null
+          ? BarcodeRect.decode(result[1]! as List<Object?>)
+          : null,
+    );
+  }
+}
+
+class BarcodeRect {
+  BarcodeRect({
+    required this.left,
+    required this.top,
+    required this.right,
+    required this.bottom,
+  });
+
+  int left;
+
+  int top;
+
+  int right;
+
+  int bottom;
+
+  Object encode() {
+    return <Object?>[
+      left,
+      top,
+      right,
+      bottom,
+    ];
+  }
+
+  static BarcodeRect decode(Object result) {
+    result as List<Object?>;
+    return BarcodeRect(
+      left: result[0]! as int,
+      top: result[1]! as int,
+      right: result[2]! as int,
+      bottom: result[3]! as int,
     );
   }
 }
@@ -74,11 +98,14 @@ class _QrMobileVisionApiCodec extends StandardMessageCodec {
   const _QrMobileVisionApiCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is ScannedBarcode) {
+    if (value is BarcodeRect) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is ScannedBarcodesResponse) {
+    } else if (value is ScannedBarcode) {
       buffer.putUint8(129);
+      writeValue(buffer, value.encode());
+    } else if (value is ScannedBarcodesResponse) {
+      buffer.putUint8(130);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -89,8 +116,10 @@ class _QrMobileVisionApiCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128: 
-        return ScannedBarcode.decode(readValue(buffer)!);
+        return BarcodeRect.decode(readValue(buffer)!);
       case 129: 
+        return ScannedBarcode.decode(readValue(buffer)!);
+      case 130: 
         return ScannedBarcodesResponse.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);

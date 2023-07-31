@@ -97,15 +97,16 @@ class QrDetector implements OnSuccessListener<List<Barcode>>, OnFailureListener 
             barcode1.setBarcode(barcode.getDisplayValue());
 
             if (barcode.getBoundingBox() != null) {
-                barcode1.setBoundTop((long) barcode.getBoundingBox().top);
-                barcode1.setBoundBottom((long) barcode.getBoundingBox().bottom);
-                barcode1.setBoundLeft((long) barcode.getBoundingBox().left);
-                barcode1.setBoundRight((long) barcode.getBoundingBox().right);
+                final ScannedBarcodePigeon.BarcodeRect barcodeRect = new ScannedBarcodePigeon.BarcodeRect();
+                barcodeRect.setLeft((long) barcode.getBoundingBox().left);
+                barcodeRect.setTop((long) barcode.getBoundingBox().top);
+                barcodeRect.setRight((long) barcode.getBoundingBox().right);
+                barcodeRect.setBottom((long) barcode.getBoundingBox().bottom);
+                barcode1.setRect(barcodeRect);
             }
 
             barcodes.add(barcode1);
         }
-
         communicator.onScanned(barcodes);
     }
 
