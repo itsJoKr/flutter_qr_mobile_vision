@@ -266,6 +266,9 @@ extension QrReader: AVCaptureVideoDataOutputSampleBufferDelegate {
           
           
         var barcodesList: [ScannedBarcode] = []
+          
+        if (features.isEmpty)
+            return;
         
         for feature in features {
             let rect = feature.frame

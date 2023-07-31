@@ -90,6 +90,10 @@ class QrDetector implements OnSuccessListener<List<Barcode>>, OnFailureListener 
     public void onSuccess(List<Barcode> firebaseVisionBarcodes) {
         final List<ScannedBarcodePigeon.ScannedBarcode> barcodes = new ArrayList<>();
 
+        if (barcodes.isEmpty()) {
+            return;
+        }
+
         for (Barcode barcode : firebaseVisionBarcodes) {
             communicator.qrRead(barcode.getDisplayValue());
 
