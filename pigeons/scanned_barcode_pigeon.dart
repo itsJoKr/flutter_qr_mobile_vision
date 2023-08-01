@@ -33,7 +33,10 @@ class ScannedBarcode {
 }
 
 class BarcodeRect {
-  BarcodeRect(this.left, this.top, this.right, this.bottom);
+  BarcodeRect(this.left, this.top, this.right, this.bottom, this.imageWidth, this.imageHeight);
+
+  final int imageWidth;
+  final int imageHeight;
 
   final int left;
   final int top;

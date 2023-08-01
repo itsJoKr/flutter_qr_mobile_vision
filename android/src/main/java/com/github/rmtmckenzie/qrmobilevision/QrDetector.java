@@ -1,6 +1,7 @@
 package com.github.rmtmckenzie.qrmobilevision;
 
 import android.util.Log;
+import android.util.Size;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
@@ -40,6 +41,9 @@ class QrDetector implements OnSuccessListener<List<Barcode>>, OnFailureListener 
     @GuardedBy("this")
     private Frame processingFrame;
 
+    @GuardedBy("this")
+    private Size latestFrameSize;
+
     QrDetector(QrReaderCallbacks communicator, BarcodeScannerOptions options) {
         this.communicator = communicator;
         this.detector = BarcodeScanning.getClient(options);
@@ -67,6 +71,7 @@ class QrDetector implements OnSuccessListener<List<Barcode>>, OnFailureListener 
         InputImage image;
         try {
             image = frame.toImage();
+            latestFrameSize = new Size(image.getWidth(), image.getHeight());
         } catch (IllegalStateException ex) {
             // ignore state exception from making frame to image
             // as the image may be closed already.
@@ -106,6 +111,9 @@ class QrDetector implements OnSuccessListener<List<Barcode>>, OnFailureListener 
                 barcodeRect.setTop((long) barcode.getBoundingBox().top);
                 barcodeRect.setRight((long) barcode.getBoundingBox().right);
                 barcodeRect.setBottom((long) barcode.getBoundingBox().bottom);
+                // Putting width to height, because image is always rotated 90 degrees
+                barcodeRect.setImageHeight((long) latestFrameSize.getWidth());
+                barcodeRect.setImageWidth((long) latestFrameSize.getHeight());
                 barcode1.setRect(barcodeRect);
             }
 

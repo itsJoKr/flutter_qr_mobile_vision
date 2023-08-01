@@ -47,16 +47,7 @@ class _MyAppState extends State<MyApp> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Back"),
-              Switch(
-                  value: dirState,
-                  onChanged: (val) => setState(() => dirState = val)),
-              Text("Front"),
-            ],
-          ),
+          SizedBox(height: 50),
           Expanded(
               child: Stack(
             children: [
@@ -80,25 +71,17 @@ class _MyAppState extends State<MyApp> {
                             qr = code;
                           });
                         },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            border: Border.all(
-                              color: Colors.orange,
-                              width: 10.0,
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                        ),
                       )
-                    : Center(child: Text("Camera inactive")),
+                    : new Center(child: new Text("Camera inactive")),
               ),
               if (response != null)
                 Positioned.fill(
-                  child: CustomPaint(
-                    painter:
-                        YourRect(response!, View.of(context).devicePixelRatio),
-                  ),
+                  child: LayoutBuilder(builder: (context, cons) {
+                    return CustomPaint(
+                      painter: YourRect(
+                          response!, View.of(context).devicePixelRatio, cons),
+                    );
+                  }),
                 ),
             ],
           )),
@@ -120,17 +103,23 @@ class _MyAppState extends State<MyApp> {
 }
 
 class YourRect extends CustomPainter {
-  YourRect(this.response, this.devicePixelRatio);
+  YourRect(this.response, this.devicePixelRatio, this.constraints);
 
   final ScannedBarcodesResponse response;
   final double devicePixelRatio;
+  final BoxConstraints constraints;
 
   @override
   void paint(Canvas canvas, Size size) {
-
     final Paint paint = Paint()
       ..style = PaintingStyle.fill
       ..color = const Color(0xff0056eb).withOpacity(0.3)
+      ..strokeWidth = 1.0;
+
+
+    final Paint paint2 = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xfff0562b).withOpacity(0.3)
       ..strokeWidth = 1.0;
 
     for (final barcode in response.barcodes) {
@@ -140,15 +129,67 @@ class YourRect extends CustomPainter {
 
       final rect = barcode.rect!;
 
+      // temp calc
+      final oldLeft = rect.left / devicePixelRatio;
+      final oldRight = rect.right / devicePixelRatio;
+      final oldTop = rect.top / devicePixelRatio;
+      final oldBottom = rect.bottom / devicePixelRatio;
+
+      // the diff way
+      // in dps
+      final flutterScreenWidth = size.width;
+      final flutterScreenHeight = size.height;
+
+      // in px
+      final nativeScreenWidth = rect.imageWidth;
+      final nativeScreenHeight = rect.imageHeight;
+
+      final horizCut = (nativeScreenWidth / devicePixelRatio - flutterScreenWidth) / 2;
+      final vertCut = (nativeScreenHeight / devicePixelRatio - flutterScreenHeight) / 2;
+
+      print('horizCut $horizCut vertCut $vertCut');
+
+      // final newLeft = (rect.left / rect.imageWidth) * flutterScreenWidth;
+      // final newRight = (rect.right / rect.imageWidth) * flutterScreenWidth;
+      // final newTop = (rect.top / rect.imageHeight) * flutterScreenWidth;
+      // final newBottom = (rect.bottom / rect.imageHeight) * flutterScreenWidth;
+
+      final originalInwardLeft = (nativeScreenWidth / 2) - rect.left;
+      final originalInwardRight = (nativeScreenWidth / 2) - rect.right;
+      final originalInwardTop = (nativeScreenHeight / 2) - rect.top;
+      final originalInwardBottom = (nativeScreenHeight / 2) - rect.bottom;
+
+      final inwardLRatio = originalInwardLeft / rect.imageWidth;
+      final inwardRRatio = originalInwardRight / rect.imageWidth;
+      final inwardTRatio = originalInwardTop / rect.imageHeight;
+      final inwardBRatio = originalInwardBottom / rect.imageHeight;
+
+      final newLeft =
+          (flutterScreenWidth / 2) - (flutterScreenWidth * inwardLRatio);
+      final newRight =
+          (flutterScreenWidth / 2) - (flutterScreenWidth * inwardRRatio);
+      final newTop =
+          (flutterScreenHeight / 2) - (flutterScreenWidth * inwardTRatio);
+      final newBottom =
+          (flutterScreenHeight / 2) - (flutterScreenWidth * inwardBRatio);
+
+      print(
+          'oldLeft $oldLeft flutterScreenWidth $flutterScreenWidth nativeScreenWidth $nativeScreenWidth newLeft $newLeft');
+
       canvas.drawRect(
         Rect.fromLTRB(
-          rect.left / devicePixelRatio,
-          rect.top / devicePixelRatio,
-          rect.right / devicePixelRatio,
-          rect.bottom / devicePixelRatio,
+          rect.left / devicePixelRatio - horizCut,
+          rect.top / devicePixelRatio - vertCut,
+          rect.right / devicePixelRatio - horizCut,
+          rect.bottom / devicePixelRatio - vertCut,
         ),
         paint,
       );
+
+      // canvas.drawRect(
+      //   Rect.fromLTRB(newLeft, newTop, newRight, newBottom),
+      //   paint2,
+      // );
     }
   }
 

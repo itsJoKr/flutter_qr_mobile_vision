@@ -274,7 +274,7 @@ extension QrReader: AVCaptureVideoDataOutputSampleBufferDelegate {
 //            let barcodeRect = BarcodeRect(left: Int64(rect.minX), top: Int64(rect.minY), right:  Int64(rect.maxX), bottom: Int64(rect.maxY))
             
             // Re-calculated
-            let barcodeRect = BarcodeRect(left: Int64(self.previewSize!.height) - Int64(rect.minY), top: Int64(rect.minX), right: Int64(self.previewSize!.height) - Int64(rect.maxY), bottom: Int64(rect.maxX))
+            let barcodeRect = BarcodeRect( imageWidth: Int64(self.previewSize.height), imageHeight: Int64(self.previewSize.width), left: Int64(self.previewSize!.height) - Int64(rect.minY), top: Int64(rect.minX), right: Int64(self.previewSize!.height) - Int64(rect.maxY), bottom: Int64(rect.maxX))
             let barcode = ScannedBarcode(barcode: feature.displayValue ?? "N/A", rect: barcodeRect)
             barcodesList.append(barcode)
             

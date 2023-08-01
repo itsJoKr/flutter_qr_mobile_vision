@@ -179,6 +179,32 @@ public class ScannedBarcodePigeon {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static final class BarcodeRect {
+    private @NonNull Long imageWidth;
+
+    public @NonNull Long getImageWidth() {
+      return imageWidth;
+    }
+
+    public void setImageWidth(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"imageWidth\" is null.");
+      }
+      this.imageWidth = setterArg;
+    }
+
+    private @NonNull Long imageHeight;
+
+    public @NonNull Long getImageHeight() {
+      return imageHeight;
+    }
+
+    public void setImageHeight(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"imageHeight\" is null.");
+      }
+      this.imageHeight = setterArg;
+    }
+
     private @NonNull Long left;
 
     public @NonNull Long getLeft() {
@@ -236,6 +262,20 @@ public class ScannedBarcodePigeon {
 
     public static final class Builder {
 
+      private @Nullable Long imageWidth;
+
+      public @NonNull Builder setImageWidth(@NonNull Long setterArg) {
+        this.imageWidth = setterArg;
+        return this;
+      }
+
+      private @Nullable Long imageHeight;
+
+      public @NonNull Builder setImageHeight(@NonNull Long setterArg) {
+        this.imageHeight = setterArg;
+        return this;
+      }
+
       private @Nullable Long left;
 
       public @NonNull Builder setLeft(@NonNull Long setterArg) {
@@ -266,6 +306,8 @@ public class ScannedBarcodePigeon {
 
       public @NonNull BarcodeRect build() {
         BarcodeRect pigeonReturn = new BarcodeRect();
+        pigeonReturn.setImageWidth(imageWidth);
+        pigeonReturn.setImageHeight(imageHeight);
         pigeonReturn.setLeft(left);
         pigeonReturn.setTop(top);
         pigeonReturn.setRight(right);
@@ -276,7 +318,9 @@ public class ScannedBarcodePigeon {
 
     @NonNull
     ArrayList<Object> toList() {
-      ArrayList<Object> toListResult = new ArrayList<Object>(4);
+      ArrayList<Object> toListResult = new ArrayList<Object>(6);
+      toListResult.add(imageWidth);
+      toListResult.add(imageHeight);
       toListResult.add(left);
       toListResult.add(top);
       toListResult.add(right);
@@ -286,13 +330,17 @@ public class ScannedBarcodePigeon {
 
     static @NonNull BarcodeRect fromList(@NonNull ArrayList<Object> list) {
       BarcodeRect pigeonResult = new BarcodeRect();
-      Object left = list.get(0);
+      Object imageWidth = list.get(0);
+      pigeonResult.setImageWidth((imageWidth == null) ? null : ((imageWidth instanceof Integer) ? (Integer) imageWidth : (Long) imageWidth));
+      Object imageHeight = list.get(1);
+      pigeonResult.setImageHeight((imageHeight == null) ? null : ((imageHeight instanceof Integer) ? (Integer) imageHeight : (Long) imageHeight));
+      Object left = list.get(2);
       pigeonResult.setLeft((left == null) ? null : ((left instanceof Integer) ? (Integer) left : (Long) left));
-      Object top = list.get(1);
+      Object top = list.get(3);
       pigeonResult.setTop((top == null) ? null : ((top instanceof Integer) ? (Integer) top : (Long) top));
-      Object right = list.get(2);
+      Object right = list.get(4);
       pigeonResult.setRight((right == null) ? null : ((right instanceof Integer) ? (Integer) right : (Long) right));
-      Object bottom = list.get(3);
+      Object bottom = list.get(5);
       pigeonResult.setBottom((bottom == null) ? null : ((bottom instanceof Integer) ? (Integer) bottom : (Long) bottom));
       return pigeonResult;
     }

@@ -80,18 +80,24 @@ struct ScannedBarcode {
 
 /// Generated class from Pigeon that represents data sent in messages.
 struct BarcodeRect {
+  var imageWidth: Int64
+  var imageHeight: Int64
   var left: Int64
   var top: Int64
   var right: Int64
   var bottom: Int64
 
   static func fromList(_ list: [Any?]) -> BarcodeRect? {
-    let left = list[0] is Int64 ? list[0] as! Int64 : Int64(list[0] as! Int32)
-    let top = list[1] is Int64 ? list[1] as! Int64 : Int64(list[1] as! Int32)
-    let right = list[2] is Int64 ? list[2] as! Int64 : Int64(list[2] as! Int32)
-    let bottom = list[3] is Int64 ? list[3] as! Int64 : Int64(list[3] as! Int32)
+    let imageWidth = list[0] is Int64 ? list[0] as! Int64 : Int64(list[0] as! Int32)
+    let imageHeight = list[1] is Int64 ? list[1] as! Int64 : Int64(list[1] as! Int32)
+    let left = list[2] is Int64 ? list[2] as! Int64 : Int64(list[2] as! Int32)
+    let top = list[3] is Int64 ? list[3] as! Int64 : Int64(list[3] as! Int32)
+    let right = list[4] is Int64 ? list[4] as! Int64 : Int64(list[4] as! Int32)
+    let bottom = list[5] is Int64 ? list[5] as! Int64 : Int64(list[5] as! Int32)
 
     return BarcodeRect(
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
       left: left,
       top: top,
       right: right,
@@ -100,6 +106,8 @@ struct BarcodeRect {
   }
   func toList() -> [Any?] {
     return [
+      imageWidth,
+      imageHeight,
       left,
       top,
       right,

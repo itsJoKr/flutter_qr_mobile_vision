@@ -60,11 +60,17 @@ class ScannedBarcode {
 
 class BarcodeRect {
   BarcodeRect({
+    required this.imageWidth,
+    required this.imageHeight,
     required this.left,
     required this.top,
     required this.right,
     required this.bottom,
   });
+
+  int imageWidth;
+
+  int imageHeight;
 
   int left;
 
@@ -76,6 +82,8 @@ class BarcodeRect {
 
   Object encode() {
     return <Object?>[
+      imageWidth,
+      imageHeight,
       left,
       top,
       right,
@@ -86,10 +94,12 @@ class BarcodeRect {
   static BarcodeRect decode(Object result) {
     result as List<Object?>;
     return BarcodeRect(
-      left: result[0]! as int,
-      top: result[1]! as int,
-      right: result[2]! as int,
-      bottom: result[3]! as int,
+      imageWidth: result[0]! as int,
+      imageHeight: result[1]! as int,
+      left: result[2]! as int,
+      top: result[3]! as int,
+      right: result[4]! as int,
+      bottom: result[5]! as int,
     );
   }
 }
