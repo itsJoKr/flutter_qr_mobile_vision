@@ -35,6 +35,7 @@ class ScannedBarcode {
     this.rect,
   });
 
+
   String barcode;
 
   /// https://developers.google.com/ml-kit/reference/swift/mlkitbarcodescanning/api/reference/Classes/Barcode
