@@ -42,6 +42,9 @@ class _MyAppState extends State<MyApp> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Plugin example app'),
+        actions: <Widget>[
+          IconButton(icon: new Icon(Icons.light), onPressed: _swapBackLightState),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -99,6 +102,10 @@ class _MyAppState extends State<MyApp> {
             });
           }),
     );
+  }
+
+  _swapBackLightState() async {
+    QrCamera.toggleFlash();
   }
 }
 
