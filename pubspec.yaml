@@ -19,7 +19,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  native_device_orientation: ^1.0.0
+  native_device_orientation: ^2.0.3
   device_info_plus: '>=3.0.0 <11.0.0'
 dev_dependencies:
   pigeon: ^10.1.4
