@@ -6,8 +6,7 @@ import 'package:pigeon/pigeon.dart';
   // kotlinOut:
   // 'android/app/src/main/kotlin/dev/flutter/pigeon_example_app/ScannedBarcode.g.kt',
   // kotlinOptions: KotlinOptions(),
-  javaOut:
-      'android/src/main/java/com/github/rmtmckenzie/qrmobilevision/ScannedBarcodePigeon.java',
+  javaOut: 'android/src/main/java/com/github/rmtmckenzie/qrmobilevision/ScannedBarcodePigeon.java',
   javaOptions: JavaOptions(package: 'com.github.rmtmckenzie.qrmobilevision'),
   swiftOut: 'ios/Classes/ScannedBarcodePigeon.g.swift',
   swiftOptions: SwiftOptions(),
@@ -25,11 +24,12 @@ class ScannedBarcodesResponse {
 
 class ScannedBarcode {
   final String barcode;
+  final ScannedBarcodeFormat? format;
 
   /// https://developers.google.com/ml-kit/reference/swift/mlkitbarcodescanning/api/reference/Classes/Barcode
   final BarcodeRect? rect;
 
-  ScannedBarcode(this.barcode, this.rect);
+  ScannedBarcode(this.barcode, this.format, this.rect);
 }
 
 class BarcodeRect {
@@ -42,6 +42,23 @@ class BarcodeRect {
   final int top;
   final int right;
   final int bottom;
+}
+
+enum ScannedBarcodeFormat {
+  unknown,
+  CODE_128,
+  CODE_39,
+  CODE_93,
+  CODABAR,
+  DATA_MATRIX,
+  EAN_13,
+  EAN_8,
+  ITF,
+  QR_CODE,
+  UPC_A,
+  UPC_E,
+  PDF417,
+  AZTEC,
 }
 
 @FlutterApi()

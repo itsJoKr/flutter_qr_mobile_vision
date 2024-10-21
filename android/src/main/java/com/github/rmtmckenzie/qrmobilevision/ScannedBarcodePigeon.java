@@ -57,6 +57,29 @@ public class ScannedBarcodePigeon {
     return errorList;
   }
 
+  public enum ScannedBarcodeFormat {
+    UNKNOWN(0),
+    CODE_128(1),
+    CODE_39(2),
+    CODE_93(3),
+    CODABAR(4),
+    DATA_MATRIX(5),
+    EAN_13(6),
+    EAN_8(7),
+    ITF(8),
+    QR_CODE(9),
+    UPC_A(10),
+    UPC_E(11),
+    PDF417(12),
+    AZTEC(13);
+
+    final int index;
+
+    private ScannedBarcodeFormat(final int index) {
+      this.index = index;
+    }
+  }
+
   /** Generated class from Pigeon that represents data sent in messages. */
   public static final class ScannedBarcodesResponse {
     private @NonNull List<ScannedBarcode> barcodes;
@@ -121,6 +144,16 @@ public class ScannedBarcodePigeon {
       this.barcode = setterArg;
     }
 
+    private @Nullable ScannedBarcodeFormat format;
+
+    public @Nullable ScannedBarcodeFormat getFormat() {
+      return format;
+    }
+
+    public void setFormat(@Nullable ScannedBarcodeFormat setterArg) {
+      this.format = setterArg;
+    }
+
     /** https://developers.google.com/ml-kit/reference/swift/mlkitbarcodescanning/api/reference/Classes/Barcode */
     private @Nullable BarcodeRect rect;
 
@@ -144,6 +177,13 @@ public class ScannedBarcodePigeon {
         return this;
       }
 
+      private @Nullable ScannedBarcodeFormat format;
+
+      public @NonNull Builder setFormat(@Nullable ScannedBarcodeFormat setterArg) {
+        this.format = setterArg;
+        return this;
+      }
+
       private @Nullable BarcodeRect rect;
 
       public @NonNull Builder setRect(@Nullable BarcodeRect setterArg) {
@@ -154,6 +194,7 @@ public class ScannedBarcodePigeon {
       public @NonNull ScannedBarcode build() {
         ScannedBarcode pigeonReturn = new ScannedBarcode();
         pigeonReturn.setBarcode(barcode);
+        pigeonReturn.setFormat(format);
         pigeonReturn.setRect(rect);
         return pigeonReturn;
       }
@@ -161,8 +202,9 @@ public class ScannedBarcodePigeon {
 
     @NonNull
     ArrayList<Object> toList() {
-      ArrayList<Object> toListResult = new ArrayList<Object>(2);
+      ArrayList<Object> toListResult = new ArrayList<Object>(3);
       toListResult.add(barcode);
+      toListResult.add(format == null ? null : format.index);
       toListResult.add((rect == null) ? null : rect.toList());
       return toListResult;
     }
@@ -171,7 +213,9 @@ public class ScannedBarcodePigeon {
       ScannedBarcode pigeonResult = new ScannedBarcode();
       Object barcode = list.get(0);
       pigeonResult.setBarcode((String) barcode);
-      Object rect = list.get(1);
+      Object format = list.get(1);
+      pigeonResult.setFormat(format == null ? null : ScannedBarcodeFormat.values()[(int) format]);
+      Object rect = list.get(2);
       pigeonResult.setRect((rect == null) ? null : BarcodeRect.fromList((ArrayList<Object>) rect));
       return pigeonResult;
     }

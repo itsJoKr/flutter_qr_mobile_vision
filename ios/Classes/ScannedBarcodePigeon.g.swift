@@ -34,6 +34,23 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
   return value as! T?
 }
 
+enum ScannedBarcodeFormat: Int {
+  case unknown = 0
+  case cODE128 = 1
+  case cODE39 = 2
+  case cODE93 = 3
+  case cODABAR = 4
+  case dATAMATRIX = 5
+  case eAN13 = 6
+  case eAN8 = 7
+  case iTF = 8
+  case qRCODE = 9
+  case uPCA = 10
+  case uPCE = 11
+  case pDF417 = 12
+  case aZTEC = 13
+}
+
 /// Generated class from Pigeon that represents data sent in messages.
 struct ScannedBarcodesResponse {
   var barcodes: [ScannedBarcode?]
@@ -55,24 +72,32 @@ struct ScannedBarcodesResponse {
 /// Generated class from Pigeon that represents data sent in messages.
 struct ScannedBarcode {
   var barcode: String
+  var format: ScannedBarcodeFormat? = nil
   /// https://developers.google.com/ml-kit/reference/swift/mlkitbarcodescanning/api/reference/Classes/Barcode
   var rect: BarcodeRect? = nil
 
   static func fromList(_ list: [Any?]) -> ScannedBarcode? {
     let barcode = list[0] as! String
+    var format: ScannedBarcodeFormat? = nil
+    let formatEnumVal: Int? = nilOrValue(list[1])
+    if let formatRawValue = formatEnumVal {
+      format = ScannedBarcodeFormat(rawValue: formatRawValue)!
+    }
     var rect: BarcodeRect? = nil
-    if let rectList: [Any?] = nilOrValue(list[1]) {
+    if let rectList: [Any?] = nilOrValue(list[2]) {
       rect = BarcodeRect.fromList(rectList)
     }
 
     return ScannedBarcode(
       barcode: barcode,
+      format: format,
       rect: rect
     )
   }
   func toList() -> [Any?] {
     return [
       barcode,
+      format?.rawValue,
       rect?.toList(),
     ]
   }
