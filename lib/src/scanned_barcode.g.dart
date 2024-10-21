@@ -8,6 +8,23 @@ import 'dart:typed_data' show Float64List, Int32List, Int64List, Uint8List;
 import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
 
+enum ScannedBarcodeFormat {
+  unknown,
+  CODE_128,
+  CODE_39,
+  CODE_93,
+  CODABAR,
+  DATA_MATRIX,
+  EAN_13,
+  EAN_8,
+  ITF,
+  QR_CODE,
+  UPC_A,
+  UPC_E,
+  PDF417,
+  AZTEC,
+}
+
 class ScannedBarcodesResponse {
   ScannedBarcodesResponse({
     required this.barcodes,
@@ -32,11 +49,13 @@ class ScannedBarcodesResponse {
 class ScannedBarcode {
   ScannedBarcode({
     required this.barcode,
+    this.format,
     this.rect,
   });
 
-
   String barcode;
+
+  ScannedBarcodeFormat? format;
 
   /// https://developers.google.com/ml-kit/reference/swift/mlkitbarcodescanning/api/reference/Classes/Barcode
   BarcodeRect? rect;
@@ -44,6 +63,7 @@ class ScannedBarcode {
   Object encode() {
     return <Object?>[
       barcode,
+      format?.index,
       rect?.encode(),
     ];
   }
@@ -52,8 +72,11 @@ class ScannedBarcode {
     result as List<Object?>;
     return ScannedBarcode(
       barcode: result[0]! as String,
-      rect: result[1] != null
-          ? BarcodeRect.decode(result[1]! as List<Object?>)
+      format: result[1] != null
+          ? ScannedBarcodeFormat.values[result[1]! as int]
+          : null,
+      rect: result[2] != null
+          ? BarcodeRect.decode(result[2]! as List<Object?>)
           : null,
     );
   }
