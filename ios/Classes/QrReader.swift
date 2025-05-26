@@ -277,11 +277,11 @@ extension QrReader: AVCaptureVideoDataOutputSampleBufferDelegate {
                     let barcodeRect = BarcodeRect( imageWidth: Int64(self.previewSize.height), imageHeight: Int64(self.previewSize.width), left: Int64(self.previewSize!.height) - Int64(rect.minY), top: Int64(rect.minX), right: Int64(self.previewSize!.height) - Int64(rect.maxY), bottom: Int64(rect.maxX))
                     
                     
-                    let barcode = ScannedBarcode(barcode: feature.displayValue ?? "N/A", format: self.mapBarcodeFormat(format: feature.format), rect: barcodeRect)
+                    let barcode = ScannedBarcode(barcode: feature.rawValue ?? "N/A", format: self.mapBarcodeFormat(format: feature.format), rect: barcodeRect)
                     barcodesList.append(barcode)
                     
                     // Old way
-                    if let value = feature.displayValue {
+                    if let value = feature.rawValue {
                         self.qrCallback(value)
                     }
                 }
