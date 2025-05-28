@@ -1,3 +1,27 @@
+## [6.0.0] - May 28, 2025
+* Support 16 KB page sizes
+* Bump android MLKit version
+* Match MLKit minimum sdk version (26)
+
+## [5.0.3] - May 21, 2025
+* Fix Preview conflict with new Flutter version
+* Bump dependencies
+
+## [5.0.2] - Oct 21, 2024
+* Fix permission conflict on android
+* Bump dependencies
+
+## [5.0.1] - Feb 14, 2024
+* Fix null pointer exception on disconnect for android
+* Fix deprecated Handler
+
+## [5.0.0] - January 26, 2024
+* Bump version to match what is supported by MLKit library.
+  No more Camera1 API needed!
+* No major changes, but did recreate all plumbing with
+  flutter create and updated qr_mobile_vision to 2.0
+  which might require a flutter clean.
+
 ## [4.1.4]
 * Bugfix for flashlight on phones with multiple cameras
 
