@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:qr_mobile_vision/qr_mobile_vision.dart';
-import 'package:qr_mobile_vision/src/preview.dart';
+import 'package:qr_mobile_vision/src/preview.dart' as pr;
 import 'package:qr_mobile_vision/src/preview_details.dart';
 import 'package:qr_mobile_vision/src/scanned_barcode.g.dart';
 
@@ -162,7 +162,7 @@ class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
               Widget preview = SizedBox(
                 width: constraints.maxWidth,
                 height: constraints.maxHeight,
-                child: Preview(
+                child: pr.Preview(
                   previewDetails: details.data!,
                   targetWidth: constraints.maxWidth,
                   targetHeight: constraints.maxHeight,
