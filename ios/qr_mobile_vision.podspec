@@ -21,7 +21,7 @@ Plugin for reading QR codes using Google&#x27;s Mobile Vision API.
   s.swift_version = '5.0'
 
   # Update to newer MLKit version that's compatible with Firebase
-  s.dependency 'GoogleMLKit/BarcodeScanning', '~> 5.0'
+  s.dependency 'GoogleMLKit/BarcodeScanning', '~> 6.0'
   
   s.static_framework = true
 end
