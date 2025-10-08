@@ -1,3 +1,6 @@
+## [6.0.1] - Oct 8, 2025
+* Bump dependencies
+
 ## [6.0.0] - May 28, 2025
 * Support 16 KB page sizes
 * Bump android MLKit version
