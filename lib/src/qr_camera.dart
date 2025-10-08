@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart' hide Preview;
+import 'package:flutter/widgets.dart';
 import 'package:qr_mobile_vision/qr_mobile_vision.dart';
 import 'package:qr_mobile_vision/src/preview.dart';
 import 'package:qr_mobile_vision/src/preview_details.dart';
@@ -38,7 +38,7 @@ class QrCamera extends StatefulWidget {
   final List<BarcodeFormats>? formats;
   final CameraDirection cameraDirection;
 
-  static toggleFlash() {
+  static void toggleFlash() {
     QrMobileVision.toggleFlash();
   }
 
