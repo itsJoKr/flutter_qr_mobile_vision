@@ -26,16 +26,18 @@ android {
     compileSdkVersion 34
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 26
     }
     lintOptions {
         disable 'InvalidPackage'
     }
 }
 
-dependencies {
-    implementation 'com.google.mlkit:barcode-scanning:17.1.0'
-}
+    dependencies {
+        implementation 'com.google.mlkit:barcode-scanning:[17.3.0, 18.0.0)'
+        testImplementation 'junit:junit:4.13.2'
+        testImplementation 'org.mockito:mockito-core:5.0.0'
+    }
 
 
 // if flutter.dir has been defined, use this to add dependency to flutter. This allows the android studio to provide
