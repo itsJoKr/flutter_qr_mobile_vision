@@ -15,6 +15,26 @@ final ErrorCallback _defaultOnError = (BuildContext context, Object? error) {
 
 typedef Widget ErrorCallback(BuildContext context, Object? error);
 
+class QrCameraController {
+  QrCameraState? _state;
+
+  void attach(QrCameraState state) {
+    _state = state;
+  }
+
+  void detach() {
+    _state = null;
+  }
+
+  Future<void> restart() {
+    return _state?.restart() ?? Future.value();
+  }
+
+  Future<void> stop() {
+    return _state?.stop() ?? Future.value();
+  }
+}
+
 class QrCamera extends StatefulWidget {
   QrCamera({
     Key? key,
@@ -27,6 +47,7 @@ class QrCamera extends StatefulWidget {
     ErrorCallback? onError,
     this.cameraDirection = CameraDirection.BACK,
     this.formats,
+    this.controller,
   })  : notStartedBuilder = notStartedBuilder ?? _defaultNotStartedBuilder,
         offscreenBuilder = offscreenBuilder ?? notStartedBuilder ?? _defaultOffscreenBuilder,
         onError = onError ?? _defaultOnError,
@@ -41,6 +62,7 @@ class QrCamera extends StatefulWidget {
   final ErrorCallback onError;
   final List<BarcodeFormats>? formats;
   final CameraDirection cameraDirection;
+  final QrCameraController? controller;
 
   static toggleFlash() {
     QrMobileVision.toggleFlash();
@@ -58,6 +80,7 @@ class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _ambiguate(WidgetsBinding.instance)!.addObserver(this);
+    widget.controller?.attach(this);
   }
 
   @override
@@ -68,6 +91,7 @@ class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
 
   @override
   dispose() {
+    widget.controller?.detach();
     _ambiguate(WidgetsBinding.instance)!.removeObserver(this);
     super.dispose();
   }
@@ -79,6 +103,11 @@ class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
       setState(() {
         _asyncInitOnce = null;
       });
+    }
+
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller?.detach();
+      widget.controller?.attach(this);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -115,21 +144,19 @@ class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
 
   /// This method can be used to restart scanning
   ///  the event that it was paused.
-  void restart() {
-    (() async {
-      await QrMobileVision.stop();
+  Future<void> restart() async {
+    await QrMobileVision.stop();
+    if (mounted) {
       setState(() {
         _asyncInitOnce = null;
       });
-    })();
+    }
   }
 
   /// This method can be used to manually stop the
   /// camera.
-  void stop() {
-    (() async {
-      await QrMobileVision.stop();
-    })();
+  Future<void> stop() async {
+    await QrMobileVision.stop();
   }
 
   @override
