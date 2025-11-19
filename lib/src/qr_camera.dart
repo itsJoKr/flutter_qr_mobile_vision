@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qr_mobile_vision/qr_mobile_vision.dart';
 import 'package:qr_mobile_vision/src/preview.dart' as pr;
@@ -24,6 +27,10 @@ class QrCameraController {
 
   void detach() {
     _state = null;
+  }
+
+  Future<Uint8List?> capturePhoto() {
+    return _state?.capturePhoto() ?? Future.value(null);
   }
 
   Future<void> restart() {
@@ -73,6 +80,8 @@ class QrCamera extends StatefulWidget {
 }
 
 class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
+  final GlobalKey _previewKey = GlobalKey();
+
   // needed for flutter < 3.0 to still be supported
   T? _ambiguate<T>(T? value) => value;
 
@@ -124,6 +133,18 @@ class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
         onScreen = false;
         _asyncInitOnce = null;
       });
+    }
+  }
+
+  Future<Uint8List?> capturePhoto() async {
+    try {
+      final RenderRepaintBoundary boundary = _previewKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      debugPrint('Error capturing photo: $e');
+      return null;
     }
   }
 
@@ -186,14 +207,17 @@ class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
                 debugPrint(details.error.toString());
                 return widget.onError(context, details.error);
               }
-              Widget preview = SizedBox(
-                width: constraints.maxWidth,
-                height: constraints.maxHeight,
-                child: pr.Preview(
-                  previewDetails: details.data!,
-                  targetWidth: constraints.maxWidth,
-                  targetHeight: constraints.maxHeight,
-                  fit: widget.fit,
+              Widget preview = RepaintBoundary(
+                key: _previewKey,
+                child: SizedBox(
+                  width: constraints.maxWidth,
+                  height: constraints.maxHeight,
+                  child: pr.Preview(
+                    previewDetails: details.data!,
+                    targetWidth: constraints.maxWidth,
+                    targetHeight: constraints.maxHeight,
+                    fit: widget.fit,
+                  ),
                 ),
               );
 

@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qr_mobile_vision/qr_camera.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 void main() {
   debugPaintSizeEnabled = false;
@@ -28,6 +32,7 @@ class _MyAppState extends State<MyApp> {
   String? qr;
   bool camState = false;
   bool dirState = false;
+  final QrCameraController _cameraController = QrCameraController();
 
   int dumbWayToThrottle = 0;
   ScannedBarcodesResponse? response;
@@ -57,6 +62,7 @@ class _MyAppState extends State<MyApp> {
               Positioned.fill(
                 child: camState
                     ? QrCamera(
+                        controller: _cameraController,
                         onScannedBarcodes: (codes) {
                           setState(() {
                             response = codes;
@@ -66,9 +72,7 @@ class _MyAppState extends State<MyApp> {
                           error.toString(),
                           style: TextStyle(color: Colors.red),
                         ),
-                        cameraDirection: dirState
-                            ? CameraDirection.FRONT
-                            : CameraDirection.BACK,
+                        cameraDirection: dirState ? CameraDirection.FRONT : CameraDirection.BACK,
                         qrCodeCallback: (code) {
                           setState(() {
                             qr = code;
@@ -81,8 +85,7 @@ class _MyAppState extends State<MyApp> {
                 Positioned.fill(
                   child: LayoutBuilder(builder: (context, cons) {
                     return CustomPaint(
-                      painter: YourRect(
-                          response!, View.of(context).devicePixelRatio, cons),
+                      painter: YourRect(response!, View.of(context).devicePixelRatio, cons),
                     );
                   }),
                 ),
@@ -91,17 +94,57 @@ class _MyAppState extends State<MyApp> {
           Text("QRCODE: $qr"),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-          child: Text(
-            "on/off",
-            textAlign: TextAlign.center,
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+              heroTag: 'camera',
+              child: Text(
+                "on/off",
+                textAlign: TextAlign.center,
+              ),
+              onPressed: () {
+                setState(() {
+                  camState = !camState;
+                });
+              }),
+          SizedBox(height: 16),
+          FloatingActionButton(
+            heroTag: 'capture',
+            child: Icon(Icons.camera_alt),
+            onPressed: _takePhoto,
           ),
-          onPressed: () {
-            setState(() {
-              camState = !camState;
-            });
-          }),
+        ],
+      ),
     );
+  }
+
+  void _takePhoto() async {
+    if (!camState) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Camera is not active')),
+      );
+      return;
+    }
+    final imageBytes = await _cameraController.capturePhoto();
+
+    if (imageBytes != null) {
+      try {
+        final directory = await getApplicationDocumentsDirectory();
+        final filePath = p.join(directory.path, 'photo_${DateTime.now().millisecondsSinceEpoch}.png');
+
+        final file = File(filePath);
+        await file.writeAsBytes(imageBytes);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Photo saved to: $filePath')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving photo: $e')),
+        );
+      }
+    }
   }
 
   _swapBackLightState() async {
@@ -122,7 +165,6 @@ class YourRect extends CustomPainter {
       ..style = PaintingStyle.fill
       ..color = const Color(0xff0056eb).withOpacity(0.3)
       ..strokeWidth = 1.0;
-
 
     final Paint paint2 = Paint()
       ..style = PaintingStyle.fill
@@ -171,14 +213,10 @@ class YourRect extends CustomPainter {
       final inwardTRatio = originalInwardTop / rect.imageHeight;
       final inwardBRatio = originalInwardBottom / rect.imageHeight;
 
-      final newLeft =
-          (flutterScreenWidth / 2) - (flutterScreenWidth * inwardLRatio);
-      final newRight =
-          (flutterScreenWidth / 2) - (flutterScreenWidth * inwardRRatio);
-      final newTop =
-          (flutterScreenHeight / 2) - (flutterScreenWidth * inwardTRatio);
-      final newBottom =
-          (flutterScreenHeight / 2) - (flutterScreenWidth * inwardBRatio);
+      final newLeft = (flutterScreenWidth / 2) - (flutterScreenWidth * inwardLRatio);
+      final newRight = (flutterScreenWidth / 2) - (flutterScreenWidth * inwardRRatio);
+      final newTop = (flutterScreenHeight / 2) - (flutterScreenWidth * inwardTRatio);
+      final newBottom = (flutterScreenHeight / 2) - (flutterScreenWidth * inwardBRatio);
 
       print(
           'oldLeft $oldLeft flutterScreenWidth $flutterScreenWidth nativeScreenWidth $nativeScreenWidth newLeft $newLeft');
