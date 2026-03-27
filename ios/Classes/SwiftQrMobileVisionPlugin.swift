@@ -1,7 +1,6 @@
 import Flutter
 import UIKit
-import MLKitVision
-import MLKitBarcodeScanning
+import Vision
 
 class MapArgumentReader {
   
@@ -70,7 +69,7 @@ public class SwiftQrMobileVisionPlugin: NSObject, FlutterPlugin {
       
       let cameraDirection = cameraDirectionInt == 0 ? QrCameraDirection.front : QrCameraDirection.back
 
-      let options = BarcodeScannerOptions(formatStrings: formatStrings)
+      let symbologies = VisionSymbologyMapper.symbologies(from: formatStrings)
             
       do {
         reader = try QrReader(
@@ -78,7 +77,7 @@ public class SwiftQrMobileVisionPlugin: NSObject, FlutterPlugin {
           targetHeight: targetHeight,
           direction: cameraDirection,
           textureRegistry: textureRegistry,
-          options: options,
+          symbologies: symbologies,
         qrCallback: { [unowned self] qr in
             self.channel.invokeMethod("qrRead", arguments: qr)
         },
