@@ -20,8 +20,9 @@ Plugin for reading QR codes using Google&#x27;s Mobile Vision API.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphoneos*]' => 'arm64' }
   s.swift_version = '5.0'
 
-  # Update to newer MLKit version that's compatible with Firebase
-  s.dependency 'GoogleMLKit/BarcodeScanning', '~> 7.0'
-  
+  # Uses Apple Vision Framework for barcode detection on iOS (built-in, no external dependency needed).
+  # Android continues to use MLKit.
+  s.frameworks = 'Vision'
+
   s.static_framework = true
 end
