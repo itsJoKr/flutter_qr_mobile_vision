@@ -255,38 +255,38 @@ class QrReader: NSObject {
     func stop() {
         captureSession.stopRunning()
         pixelBuffer = nil
-        textureRegistry.unregisterTexture(textureId)
+        if let textureId = textureId {
+            textureRegistry.unregisterTexture(textureId)
+        }
         textureId = nil
     }
 }
 
 extension QrReader : FlutterTexture {
     func copyPixelBuffer() -> Unmanaged<CVPixelBuffer>? {
-        if(pixelBuffer == nil){
+        // Read once: the capture queue can clear it between a nil check and the unwrap.
+        guard let buffer = pixelBuffer else {
             return nil
         }
-        return  .passRetained(pixelBuffer!)
+        return .passRetained(buffer)
     }
 }
 
 extension QrReader: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        // runs on dispatch queue
-
-        pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)!
-        textureRegistry.textureFrameAvailable(self.textureId)
-
+        // Runs on the capture queue. Frames can still arrive after stop() cleared textureId,
+        // and a sample buffer can come without an image buffer.
+        guard let textureId = self.textureId, let frame = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
+        pixelBuffer = frame
+        textureRegistry.textureFrameAvailable(textureId)
 
         guard !isProcessing.swap(true) else {
             return
         }
 
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            self.isProcessing.value = false
-            return
-        }
-
-        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .right, options: [:])
+        let handler = VNImageRequestHandler(cvPixelBuffer: frame, orientation: .right, options: [:])
 
         DispatchQueue.global(qos: DispatchQoS.QoSClass.utility).async {
             do {
